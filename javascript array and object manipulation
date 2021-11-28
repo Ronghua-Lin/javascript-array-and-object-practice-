@@ -1,0 +1,113 @@
+
+
+// Returns a random DNA base
+const returnRandBase = () => {
+  const dnaBases = ['A', 'T', 'C', 'G']
+  return dnaBases[Math.floor(Math.random() * 4)] 
+}
+
+// Returns a random single stand of DNA containing 15 bases
+const mockUpStrand = () => {
+  const newStrand = []
+  for (let i = 0; i < 15; i++) {
+    newStrand.push(returnRandBase())
+  }
+  return newStrand;
+}
+
+var dna= mockUpStrand();
+var dna2= mockUpStrand();
+
+console.log(dna);
+console.log(dna2);
+const pAequorFactory=(num,arr)=>{
+  return {
+    specimenNum: num,
+    dna:arr,
+    mutate(){
+      var base=Math.floor(Math.random() * 4);
+      const dnaBases = ['A', 'T', 'C', 'G'];
+      const badbase=dnaBases[base];
+      for(let i=0;i< this.dna.length;i++){
+        if(this.dna[i]===badbase){
+          var fil=dnaBases.filter(e=>e!= badbase);
+          this.dna[i]=fil[Math.floor(Math.random() * 3)];
+         
+        }
+
+      }
+      return this.dna;
+
+    },
+
+    compareDNA(pAequor){
+      var total=0;
+      for (let i=0;i< pAequor.dna.length;i++){
+        if(pAequor.dna[i]===this.dna[i])
+        total++;
+      }
+     
+      //console.log(`specimen #${pAequor.specimenNum} and specimen #${this.specimenNum} have ${(total/pAequor.dna.length*100).toFixed() }% DNA in common.`);
+      return (total/pAequor.dna.length*100).toFixed(2);
+    },
+    willLikelySurvive(){
+       var total=0;
+       for(let i of this.dna){
+          if(i==='C'||i==='G') total++;
+
+       }
+       
+       return (total/this.dna.length*100).toFixed()>=60;
+
+    },
+
+    
+
+  }
+
+}
+
+
+
+var obj1= pAequorFactory(5,dna);
+var obj2= pAequorFactory(6,dna2);
+//console.log(obj1.compareDNA(obj2));
+//console.log(obj1.willLikelySurvive());
+
+var pAequorArr=[];
+for(let i=0; i<30;i++){
+  var dna= mockUpStrand();
+  var obj=pAequorFactory(i,dna);
+
+  while(!obj.willLikelySurvive()){
+    
+
+    obj.mutate();
+  }
+  pAequorArr.push(obj);
+
+}
+
+//console.log(pAequorArr);
+
+//finding most similar dnas
+var similarity=[];
+for(let i=0;i<pAequorArr.length;i++){
+  for(let j=i+1;j<pAequorArr.length;j++){
+    const compare=pAequorArr[i].compareDNA(pAequorArr[j]);
+    similarity.push([compare,i,j]);
+  }
+}
+
+var max=0;
+var index=[];
+for(let i=0;i<similarity.length;i++){
+
+  if (max<similarity[i][0]){
+    max=similarity[i][0];
+    index[0]=[similarity[i][1],similarity[i][2]];
+  }
+ 
+}
+
+console.log(`The max similarity is ${max}, and their index are ${index[0][0]} and ${index[0][1]}. `)
